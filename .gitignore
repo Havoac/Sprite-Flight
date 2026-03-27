@@ -1,0 +1,8 @@
+# Sprite Flight
+
+Library/
+Temp/
+Logs/
+UserSettings/
+.vscode/
+*.sln
