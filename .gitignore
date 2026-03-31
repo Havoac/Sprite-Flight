@@ -5,4 +5,5 @@ Temp/
 Logs/
 UserSettings/
 .vscode/
+.vs/
 *.sln
