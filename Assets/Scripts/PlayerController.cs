@@ -1,20 +1,42 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     public float thrustForce = 1f;
     public GameObject boosterFlame;
+    public UIDocument uiDocument;
+
     Rigidbody2D rb;
     Vector2 direction;
+    Label scoreText;
+    float elapsedTime = 0;
+    float score = 0f;
+    float scoreMultiplier = 10f;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        scoreText = uiDocument.rootVisualElement.Q<Label>("ScoreLabel");
     }
 
     void Update()
+    {
+        UpdateScore();
+        MovePlayer();
+        BoosterFlameMechanic();
+    }
+
+    void UpdateScore()
+    {
+        elapsedTime += Time.deltaTime;
+        score = Mathf.FloorToInt(elapsedTime * scoreMultiplier);
+        scoreText.text = "Score : " + score;
+    }
+
+    void MovePlayer()
     {
         if (Mouse.current.leftButton.isPressed)
         {
@@ -42,8 +64,6 @@ public class PlayerController : MonoBehaviour
         // Move Player in direction to the mouse
         transform.up = direction;
         rb.AddForce(direction * thrustForce);
-
-        BoosterFlameMechanic();
     }
 
     void BoosterFlameMechanic()
