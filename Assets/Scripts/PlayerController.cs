@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public UIDocument uiDocument;
     public GameObject explosionEffect;
     public GameObject backGroundEffect;
+    public GameObject border;
 
     Rigidbody2D rb;
     Vector2 direction;
@@ -21,17 +22,32 @@ public class PlayerController : MonoBehaviour
     float score = 0f;
     float scoreMultiplier = 10f;
 
+    VisualElement highScoreContainer;
+    Label highScoreText;
+    float highScore = 0f;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         scoreText = uiDocument.rootVisualElement.Q<Label>("ScoreLabel");
+        highScoreText = uiDocument.rootVisualElement.Q<Label>("HighScoreLabel");
+        highScoreContainer = uiDocument.rootVisualElement.Q<VisualElement>("HighScoreContainer");
         restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
         restartButton.style.display = DisplayStyle.None;
         restartButton.clicked += ReloadScene;
         GameObject bgInstance = Instantiate(backGroundEffect);
         bgParticle = bgInstance.GetComponent<ParticleSystem>();
-    }
+        
+        highScoreContainer.style.display = DisplayStyle.None;
+        highScore = PlayerPrefs.GetFloat("HighScore", 0);
+        //highScoreText.text = "High Score : " + highScore;
 
+        for (int i=0; i<border.transform.childCount; i++)
+        {
+            border.transform.GetChild(i).GetComponent<SpriteRenderer>().color = Color.red;
+        }
+    }
+    
     void Update()
     {
         UpdateScore();
@@ -96,9 +112,33 @@ public class PlayerController : MonoBehaviour
         Destroy(gameObject);
         Instantiate(explosionEffect, transform.position, transform.rotation);
         restartButton.style.display = DisplayStyle.Flex;
-    
-        if(bgParticle != null)
+
+        HighScoreSetUp();
+        BordersAfterGameOver();
+
+        if (bgParticle != null)
             bgParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+    }
+
+    void HighScoreSetUp()
+    {
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetFloat("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
+
+        highScoreContainer.style.display = DisplayStyle.Flex;
+        highScoreText.text = "High Score : " + highScore;
+    }
+
+    void BordersAfterGameOver()
+    {
+        for (int i = 0; i < border.transform.childCount; i++)
+        {
+            border.transform.GetChild(i).GetComponent<SpriteRenderer>().color = Color.white;
+        }
     }
 
     void ReloadScene()
