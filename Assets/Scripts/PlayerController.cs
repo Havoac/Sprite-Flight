@@ -6,13 +6,17 @@ using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Movement")]
     public float thrustForce = 1f;
+
+    [Header("References")]
     public GameObject boosterFlame;
     public UIDocument uiDocument;
     public GameObject explosionEffect;
     public GameObject backGroundEffect;
     public GameObject border;
 
+    // UI
     Rigidbody2D rb;
     Vector2 direction;
     Label scoreText;
@@ -29,30 +33,51 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        scoreText = uiDocument.rootVisualElement.Q<Label>("ScoreLabel");
-        highScoreText = uiDocument.rootVisualElement.Q<Label>("HighScoreLabel");
-        highScoreContainer = uiDocument.rootVisualElement.Q<VisualElement>("HighScoreContainer");
-        restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
+
+        InitializeUI();
+        InitializeBackground();
+        LoadHighScore();
+        InitializeBorders();
+    }
+    
+    void InitializeUI()
+    {
+        var root = uiDocument.rootVisualElement;
+
+        scoreText = root.Q<Label>("ScoreLabel");
+        highScoreText = root.Q<Label>("HighScoreLabel");
+        highScoreContainer = root.Q<VisualElement>("HighScoreContainer");
+        restartButton = root.Q<Button>("RestartButton");
+        
         restartButton.style.display = DisplayStyle.None;
+        highScoreContainer.style.display = DisplayStyle.None;
         restartButton.clicked += ReloadScene;
+    }
+
+    void InitializeBackground()
+    {
         GameObject bgInstance = Instantiate(backGroundEffect);
         bgParticle = bgInstance.GetComponent<ParticleSystem>();
-        
-        highScoreContainer.style.display = DisplayStyle.None;
-        highScore = PlayerPrefs.GetFloat("HighScore", 0);
-        //highScoreText.text = "High Score : " + highScore;
+    }
 
-        for (int i=0; i<border.transform.childCount; i++)
+    void LoadHighScore()
+    {
+        highScore = PlayerPrefs.GetFloat("HighScore", 0);
+    }
+
+    void InitializeBorders()
+    {
+        for (int i = 0; i < border.transform.childCount; i++)
         {
             border.transform.GetChild(i).GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
-    
+
     void Update()
     {
         UpdateScore();
         MovePlayer();
-        BoosterFlameMechanic();
+        HandleBoosterFlame();
     }
 
     void UpdateScore()
@@ -92,7 +117,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(direction * thrustForce);
     }
 
-    void BoosterFlameMechanic()
+    void HandleBoosterFlame()
     {
         // Mouse Mechanic
         if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -113,14 +138,14 @@ public class PlayerController : MonoBehaviour
         Instantiate(explosionEffect, transform.position, transform.rotation);
         restartButton.style.display = DisplayStyle.Flex;
 
-        HighScoreSetUp();
-        BordersAfterGameOver();
+        ShowHighScore();
+        ResetBorders();
 
         if (bgParticle != null)
             bgParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
     }
 
-    void HighScoreSetUp()
+    void ShowHighScore()
     {
         if (score > highScore)
         {
@@ -133,7 +158,7 @@ public class PlayerController : MonoBehaviour
         highScoreText.text = "High Score : " + highScore;
     }
 
-    void BordersAfterGameOver()
+    void ResetBorders()
     {
         for (int i = 0; i < border.transform.childCount; i++)
         {
