@@ -1354,6 +1354,8 @@ MonoBehaviour:
   thrustForce: 1
   boosterFlame: {fileID: 268389957}
   uiDocument: {fileID: 1688995894}
+  explosionEffect: {fileID: 7248265936711896866, guid: 1e5f11330c7721c47a0c632de95520ec, type: 3}
+  backGroundEffect: {fileID: 7879328196739065065, guid: 625c3f9091949d34a84a542f3fbd3115, type: 3}
 --- !u!4 &1491942276 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1242437459482869913, guid: 613f8b10c7b6dc8439516e346795d5af, type: 3}

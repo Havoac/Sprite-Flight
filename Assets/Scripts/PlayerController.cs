@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
@@ -8,10 +9,14 @@ public class PlayerController : MonoBehaviour
     public float thrustForce = 1f;
     public GameObject boosterFlame;
     public UIDocument uiDocument;
+    public GameObject explosionEffect;
+    public GameObject backGroundEffect;
 
     Rigidbody2D rb;
     Vector2 direction;
     Label scoreText;
+    Button restartButton;
+    ParticleSystem bgParticle;
     float elapsedTime = 0;
     float score = 0f;
     float scoreMultiplier = 10f;
@@ -20,6 +25,11 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         scoreText = uiDocument.rootVisualElement.Q<Label>("ScoreLabel");
+        restartButton = uiDocument.rootVisualElement.Q<Button>("RestartButton");
+        restartButton.style.display = DisplayStyle.None;
+        restartButton.clicked += ReloadScene;
+        GameObject bgInstance = Instantiate(backGroundEffect);
+        bgParticle = bgInstance.GetComponent<ParticleSystem>();
     }
 
     void Update()
@@ -84,5 +94,15 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Destroy(gameObject);
+        Instantiate(explosionEffect, transform.position, transform.rotation);
+        restartButton.style.display = DisplayStyle.Flex;
+    
+        if(bgParticle != null)
+            bgParticle.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+    }
+
+    void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
