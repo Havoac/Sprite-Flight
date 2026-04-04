@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
@@ -16,24 +16,33 @@ public class Obstacle : MonoBehaviour
         rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
+    private void OnEnable()
+    {
+        DifficultyManager.OnDifficultyChanged += ApplySpeedMultiplier;
+    }
+
+    private void OnDisable()
+    {
+        DifficultyManager.OnDifficultyChanged -= ApplySpeedMultiplier;
+    }
+
     void Start()
     {
-        InitializeObstacle();   
+        InitializeObstacle();
     }
 
     void InitializeObstacle()
     {
-        Debug.Log("Obstacle created: " + gameObject.name);
-
         float randomSize = Random.Range(minSize, maxSize);
         transform.localScale = new Vector3(randomSize, randomSize, 1);
 
         float randomSpeed = Random.Range(minSpeed, maxSpeed) / randomSize;
-        Vector2 randomDirection = Random.insideUnitCircle;
+        rigidbody2D.AddForce(Random.insideUnitCircle * randomSpeed);
+        rigidbody2D.AddTorque(Random.Range(-spinSpeed, spinSpeed));
+    }
 
-        rigidbody2D.AddForce(randomDirection * randomSpeed);
-
-        float randomSpin = Random.Range(-spinSpeed, spinSpeed);
-        rigidbody2D.AddTorque(randomSpin);
+    private void ApplySpeedMultiplier(float multiplier)
+    {
+        rigidbody2D.linearVelocity *= multiplier;
     }
 }

@@ -16,6 +16,9 @@ public class PlayerController : MonoBehaviour
     public GameObject backGroundEffect;
     public GameObject border;
 
+    [Header("Script Reference")]
+    public DifficultyManager difficultyManager = null;
+
     // UI
     Rigidbody2D rb;
     Vector2 direction;
@@ -85,6 +88,7 @@ public class PlayerController : MonoBehaviour
         elapsedTime += Time.deltaTime;
         score = Mathf.FloorToInt(elapsedTime * scoreMultiplier);
         scoreText.text = "Score : " + score;
+        difficultyManager.UpdatedDifficulty(score);
     }
 
     void MovePlayer()
