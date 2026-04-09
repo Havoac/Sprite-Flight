@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement")]
-    public float thrustForce = 1f;
+    public float thrustForce = 0.3f;
 
     [Header("References")]
     public GameObject boosterFlame;
